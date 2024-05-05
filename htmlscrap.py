@@ -1,31 +1,46 @@
-from lxml import html
-import requests
-import sched
+import asyncio
 import time
+import requests
+import redis
+import telegram
+from lxml import html
+from app.config import Token, url, channels, channel_id
+from app.handlers import send_message, error
 
+r = redis.StrictRedis(host='localhost', port=6379, db=0, password="abc123", decode_responses=True)
+bot = telegram.Bot(token=Token)
 
-scheduler = sched.scheduler(time.time, time.sleep)
-url = 'https://t.me/s/unfolded'
-
-def scrap_channel():
-
-    page = requests.get(url)
+async def scrap_channel(channel):
+    print("Scraping " + channel)
+    page = requests.get(url + channel)
     content = page.content
     parsed_content = html.fromstring(content)
-    # tree = html.fromstring(page.content)
+    chats_raw = parsed_content.xpath('//div[contains(@class,"tgme_widget_message_text")]/text()')
+    if chats_raw:
+        last_chat_value = chats_raw[-1]  # Get the last message
+        if getPreviousChannelValue(channel, last_chat_value):
+            if len(last_chat_value.split()) < 1000:
+                await bot.send_message(chat_id=channel_id, text="Something is wrong with " + channel)
+                print("Something is wrong with " + channel)
+            else:
+                r.set(channel, last_chat_value)
+                await send_message(last_chat_value)
+                print(last_chat_value)
 
-    chats_raw = parsed_content.xpath('//div[contains(@class,"tgme_widget_message_text")]')
+def getPreviousChannelValue(channel: str, current_scrap_value: str) -> bool:
+    prev_value = r.get(channel)
+    return current_scrap_value != prev_value
 
-    # for chat_raw in chats_raw:
-    #     print(chat_raw.text)
-    last_chat = len(chats_raw) - 1
+async def repeat_task():
+    while True:
+        for channel in channels:
+            await scrap_channel(channel)
+        await asyncio.sleep(10)
 
-    print(chats_raw[last_chat].text)
+async def main():
+    print("Starting bot...")
+    await repeat_task()
 
-
-def repeat_task():
-    scheduler.enter(5, 1, scrap_channel, ())
-    scheduler.enter(5, 1, repeat_task, ())
-
-repeat_task()
-scheduler.run()
+if __name__ == '__main__':
+    print("Polling...")
+    asyncio.run(main())
