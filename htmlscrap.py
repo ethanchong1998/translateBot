@@ -22,27 +22,31 @@ async def checkPreviousPost(channel):
     last_index = len(chats_raw) - 1
 
     for x, chat_raw in enumerate(chats_raw):
-        chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
-        print('Checking post no.{}'.format(x))
-        if not getPreviousChannelValue(channel, chat_content): # last scrapped message
-            if not x == last_index:
-                print("Missed message detected")
-                for chat_raw in chats_raw[x+1:]:
+        try:
+            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+            print('Checking post no.{}'.format(x))
+            if not getPreviousChannelValue(channel, chat_content): # last scrapped message
+                if not x == last_index:
+                    print("Missed message detected")
+                    for chat_raw in chats_raw[x+1:]:
+                        if(checkValidTime(chat_raw)):
+                            print("Posting missed message in channel {}".format(channel))
+                            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+                            r.set(channel, chat_content)
+                            await send_message(chat_content)
+                            print('posting: {}\n'.format(chat_content))
+                break
+            elif x == last_index: # All 20 message missed
+                for chat_raw in chats_raw:
                     if(checkValidTime(chat_raw)):
-                        print("Posting missed message in channel {}".format(channel))
+                        print("finding missed posts")
                         chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+                        print('posting: {}\n'.format(chat_content))
                         r.set(channel, chat_content)
                         await send_message(chat_content)
-                        print('posting: {}\n'.format(chat_content))
-            break
-        elif x == last_index: # All 20 message missed
-            for chat_raw in chats_raw:
-                if(checkValidTime(chat_raw)):
-                    print("finding missed posts")
-                    chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
-                    print('posting: {}\n'.format(chat_content))
-                    r.set(channel, chat_content)
-                    await send_message(chat_content)
+        except IndexError:
+            continue
+
             
     
 async def scrap_channel(channel):
@@ -62,7 +66,7 @@ async def scrap_channel(channel):
             else:
                 r.set(channel, last_chat_value)
                 await send_message(last_chat_value)
-                print('Posted in channel {}: {}',format(channel,last_chat_value))
+                print('Posted in channel {}: {}'.format(channel,last_chat_value))
 
 def getPreviousChannelValue(channel: str, current_scrap_value: str) -> bool:
     prev_value = r.get(channel)

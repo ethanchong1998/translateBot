@@ -19,7 +19,9 @@ def translate_message(text: str) -> str:
         "messages": [
             {
                 "role": "system",
-                "content": "You are a helpful translator assistant who translate english crypto information to chinese version."
+                "content": "You are a helpful translator assistant who translate english crypto information to "
+                           "chinese version. Please exclude all social media or any information related to the "
+                           "communication channel."
             },
             {
                 "role": "user",
