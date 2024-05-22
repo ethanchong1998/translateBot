@@ -23,7 +23,8 @@ async def checkPreviousPost(channel):
 
     for x, chat_raw in enumerate(chats_raw):
         try:
-            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
+            chat_content = ''.join(chat_content).strip()
             print('Checking post no.{}'.format(x))
             if not getPreviousChannelValue(channel, chat_content): # last scrapped message
                 if not x == last_index:
@@ -31,7 +32,8 @@ async def checkPreviousPost(channel):
                     for chat_raw in chats_raw[x+1:]:
                         if(checkValidTime(chat_raw)):
                             print("Posting missed message in channel {}".format(channel))
-                            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+                            chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
+                            chat_content = ''.join(chat_content).strip()
                             r.set(channel, chat_content)
                             await send_message(chat_content)
                             print('posting: {}\n'.format(chat_content))
@@ -40,7 +42,8 @@ async def checkPreviousPost(channel):
                 for chat_raw in chats_raw:
                     if(checkValidTime(chat_raw)):
                         print("finding missed posts")
-                        chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0]
+                        chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
+                        chat_content = ''.join(chat_content).strip()
                         print('posting: {}\n'.format(chat_content))
                         r.set(channel, chat_content)
                         await send_message(chat_content)
@@ -58,7 +61,8 @@ async def scrap_channel(channel):
      
     if chats_raw:
         last_chat = chats_raw[-1]
-        last_chat_value = last_chat.xpath('.//div[contains(@class,"tgme_widget_message_text")]/text()')[0] # Get the last message
+        last_chat_value = last_chat.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()') # Get the last message
+        last_chat_value = ''.join(last_chat_value).strip()
 
         if getPreviousChannelValue(channel, last_chat_value):
             if len(last_chat_value.split()) > 1000:
