@@ -4,7 +4,7 @@ import json
 from app.config import OPEN_AI_KEY
 from telegram import Update
 from telegram.ext import ContextTypes
-
+from app.config import channels
 
 def translate_message(text: str) -> str:
     url = "https://api.openai.com/v1/chat/completions"
@@ -15,13 +15,12 @@ def translate_message(text: str) -> str:
     }
 
     data = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o",
         "messages": [
             {
                 "role": "system",
-                "content": "You are a helpful translator assistant who translate english crypto information to "
-                           "chinese version. Please exclude all social media or any information related to the "
-                           "communication channel."
+                "content": f"You are a helpful translator assistant who translate english crypto information to "
+                           f"nicely formatted chinese post. Please exclude sentences which contains words similar to any of the words in this list {channels}"
             },
             {
                 "role": "user",
@@ -39,5 +38,5 @@ def translate_message(text: str) -> str:
         return response.json()['choices'][0]['message']['content']
     else:
         print("Error:", response.status_code, response.text)
-        return "Error getting response from OPENAI"
+        return ""
 

@@ -34,9 +34,10 @@ async def checkPreviousPost(channel):
                             print("Posting missed message in channel {}".format(channel))
                             chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
                             chat_content = ''.join(chat_content).strip()
-                            r.set(channel, chat_content)
-                            await send_message(chat_content)
-                            print('posting: {}\n'.format(chat_content))
+                            if chat_content and not chat_content.strip() == "":
+                                r.set(channel, chat_content)
+                                await send_message(chat_content)
+                                print('posting: {}\n'.format(chat_content))
                 break
             elif x == last_index: # All 20 message missed
                 for chat_raw in chats_raw:
@@ -44,9 +45,10 @@ async def checkPreviousPost(channel):
                         print("finding missed posts")
                         chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
                         chat_content = ''.join(chat_content).strip()
-                        print('posting: {}\n'.format(chat_content))
-                        r.set(channel, chat_content)
-                        await send_message(chat_content)
+                        # prevent from sending empty message for translate
+                        if chat_content and not chat_content.strip() == "":
+                            r.set(channel, chat_content)
+                            await send_message(chat_content)
         except IndexError:
             continue
 
