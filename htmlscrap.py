@@ -34,7 +34,7 @@ async def checkPreviousPost(channel):
                             print("Posting missed message in channel {}".format(channel))
                             chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
                             chat_content = ''.join(chat_content).strip()
-                            if chat_content and not chat_content.strip() == "":
+                            if chat_content and not chat_content.strip() == "" and len(chat_content.split()) < 1000:
                                 r.set(channel, chat_content)
                                 await send_message(chat_content)
                                 print('posting: {}\n'.format(chat_content))
@@ -46,9 +46,10 @@ async def checkPreviousPost(channel):
                         chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
                         chat_content = ''.join(chat_content).strip()
                         # prevent from sending empty message for translate
-                        if chat_content and not chat_content.strip() == "":
+                        if chat_content and not chat_content.strip() == "" and len(chat_content.split()) < 1000:
                             r.set(channel, chat_content)
                             await send_message(chat_content)
+                            print('posting: {}\n'.format(chat_content))
         except IndexError:
             continue
 
@@ -70,9 +71,10 @@ async def scrap_channel(channel):
             if len(last_chat_value.split()) > 1000:
                 print("Something is wrong with " + channel)
             else:
-                r.set(channel, last_chat_value)
-                await send_message(last_chat_value)
-                print('Posted in channel {}: {}'.format(channel,last_chat_value))
+                if last_chat_value and not last_chat_value.strip() == "":
+                    r.set(channel, last_chat_value)
+                    await send_message(last_chat_value)
+                    print('Posted in channel {}: {}'.format(channel,last_chat_value))
 
 def getPreviousChannelValue(channel: str, current_scrap_value: str) -> bool:
     prev_value = r.get(channel)

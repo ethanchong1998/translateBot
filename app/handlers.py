@@ -14,7 +14,7 @@ async def send_message(text: str):
     if not response == "":
         print("Sending message....")
         emoji: str = "\u26a1" * 8
-        post_message: str = emoji + "\n \n" + response + "\n\n <a href='https://www.google.com/'>Google</a> <a href='https://www.google.com/'>Google</a> <a href='https://www.google.com/'>Google</a>"
+        post_message: str = emoji + "\n \n" + response + "\n\n\U000027a1 <a href='https://t.me/telonews_cn/'>Telegram</a> \U000027a1 <a href='https://twitter.com/telo_official/'>Twitter</a> \n\U0001F4AC <a href='https://t.me/telochat_cn/'>社区</a>"
         await bot.send_message(chat_id=channel_id, text=post_message, parse_mode=ParseMode.HTML)
 
 
