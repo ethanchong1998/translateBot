@@ -41,7 +41,7 @@ async def checkPreviousPost(channel):
                 break
             elif x == last_index: # All 20 message missed
                 for chat_raw in chats_raw:
-                    if(checkValidTime(chat_raw)):
+                    if checkValidTime(chat_raw):
                         print("finding missed posts")
                         chat_content = chat_raw.xpath('.//div[contains(@class,"tgme_widget_message_text")]//text()')
                         chat_content = ''.join(chat_content).strip()
