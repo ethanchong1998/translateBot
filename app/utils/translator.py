@@ -1,10 +1,7 @@
-from typing import Final
 import requests
-import json
-from app.config import OPEN_AI_KEY
-from telegram import Update
-from telegram.ext import ContextTypes
-from app.config import channels
+from app.config.config import OPEN_AI_KEY
+from app.config.config import channels
+
 
 def translate_message(text: str) -> str:
     url = "https://api.openai.com/v1/chat/completions"
@@ -41,4 +38,3 @@ def translate_message(text: str) -> str:
     else:
         print("Error:", response.status_code, response.text)
         return ""
-
