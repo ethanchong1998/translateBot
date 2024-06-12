@@ -24,8 +24,8 @@ async def scrap_channel(channel, first_start=False):
 
 
 async def translate_and_send(channel, post):
-    if checkValidTime(post) and content_check(post):
-        post_content = scrap_tg_post_content(post)
+    post_content = scrap_tg_post_content(post)
+    if checkValidTime(post) and content_check(post_content):
         redis_instance.set(channel, post_content)
         translated_msg = translate_message(post_content)
         await send_message(translated_msg)
