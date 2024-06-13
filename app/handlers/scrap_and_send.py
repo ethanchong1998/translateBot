@@ -4,6 +4,7 @@ from app.utils.check_valid_time import checkValidTime
 from app.utils.scrap_tg import scrap_tg_channel, scrap_tg_post_content
 from app.utils.send_message import send_message
 from app.utils.translator import translate_message
+from app.utils.format_mesasge import format_message
 
 redis_instance = get_redis_instance()
 
@@ -28,8 +29,9 @@ async def translate_and_send(channel, post):
     if checkValidTime(post) and content_check(post_content):
         redis_instance.set(channel, post_content)
         translated_msg = translate_message(post_content)
-        await send_message(translated_msg)
-        print('Posted in channel {}: {}'.format(channel, translated_msg))
+        formatted_msg = format_message(translated_msg, channel)
+        await send_message(formatted_msg)
+        print('Posted in channel {}: {}'.format(channel, formatted_msg))
 
 
 def content_check(chat_content: str):  # to prevent translating garbage
