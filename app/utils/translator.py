@@ -18,7 +18,8 @@ def translate_message(text: str) -> str:
                 "role": "system",
                 "content": f"You are a helpful translator assistant who translate english crypto information to "
                            f"nicely formatted chinese post. Please "
-                           f"rephrase the sentences to make them exciting and fun. Please exclude sentences which "
+                           f"rephrase the sentences to make them exciting and fun. Please do not add any additional phrases "
+                           f"around the link on the last part. Please exclude sentences which "
                            f"contains words similar to any of the words in this list {channels} "
             },
             {

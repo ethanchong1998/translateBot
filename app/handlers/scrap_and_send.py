@@ -27,10 +27,10 @@ async def scrap_channel(channel, first_start=False):
 async def translate_and_send(channel, post):
     post_content = scrap_tg_post_content(post)
     if checkValidTime(post) and content_check(post_content):
-        redis_instance.set(channel, post_content)
         translated_msg = translate_message(post_content)
         formatted_msg = format_message(translated_msg, channel)
         await send_message(formatted_msg)
+        redis_instance.set(channel, post_content)
         print('Posted in channel {}: {}'.format(channel, formatted_msg))
 
 

@@ -4,16 +4,18 @@ from telegram.ext import ContextTypes
 
 from app.config.config import get_telegram_bot
 from app.config.config import channel_id
+from app.utils.format_mesasge import get_extracted_url
 
 
 bot = get_telegram_bot()
 
 
 async def send_message(response: str):
+    extracted_url = get_extracted_url()
     if not response == "":
         print("Sending message....")
         emoji: str = "\u26a1" * 8
-        post_message: str = emoji + "\n \n" + response + "\n\n\U000027a1 <a href='https://t.me/telonews_cn/'>Telegram</a> \U000027a1 <a href='https://twitter.com/telo_official/'>Twitter</a> \n\U0001F4AC <a href='https://t.me/telochat_cn/'>社区</a>"
+        post_message: str = "Daily News" + "\n \n" + response + (f"\n\n<a href='{extracted_url}'>— link</a>" if extracted_url else "")
         await bot.send_message(chat_id=channel_id, text=post_message, parse_mode=ParseMode.HTML,
                                disable_web_page_preview=True)
         print('posting: {}\n'.format(post_message))
