@@ -1,4 +1,4 @@
-from app.config.config import get_redis_instance
+from app.config.config import get_db_instance
 from app.utils.check_previous_post import check_previous_post, not_previous_post_value
 from app.utils.check_valid_time import checkValidTime
 from app.utils.scrap_tg import scrap_tg_channel, scrap_tg_post_content
@@ -6,7 +6,7 @@ from app.utils.send_message import send_message
 from app.utils.translator import translate_message
 from app.utils.format_mesasge import format_message
 
-redis_instance = get_redis_instance()
+db_instance = get_db_instance()
 
 
 async def scrap_channel(channel, first_start=False):
@@ -30,7 +30,7 @@ async def translate_and_send(channel, post):
         translated_msg = translate_message(post_content)
         formatted_msg = format_message(translated_msg, channel)
         await send_message(formatted_msg)
-        redis_instance.set(channel, post_content)
+        db_instance.set_string(channel, post_content)
         print('Posted in channel {}: {}'.format(channel, formatted_msg))
 
 
