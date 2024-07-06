@@ -1,5 +1,7 @@
-from app.config.config import get_redis_instance
+from app.config.config import get_db_instance
 from app.utils.scrap_tg import scrap_tg_post_content
+
+db_instance = get_db_instance()
 
 
 async def check_previous_post(channel, posts):
@@ -12,5 +14,8 @@ async def check_previous_post(channel, posts):
 
 def not_previous_post_value(channel: str, post: str) -> bool:
     current_scrap_value = scrap_tg_post_content(post)
-    prev_value = get_redis_instance().get(channel)
+    try:
+        prev_value = db_instance.get_string(channel)
+    except ValueError:
+        prev_value = ""
     return current_scrap_value != prev_value
